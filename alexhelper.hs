@@ -2,21 +2,36 @@ module Lexer (Token(..),P,evalP,lexer) where
 import Control.Monad.State
 import Control.Monad.Error
 import Data.Word
+
+--2nd part
 data Token =
-     TTrue
-     | TFalse
-     | TZero
-     | TSucc
-     | TPred
+     TComment
+     | TLeftParen
+	 | TRightParen
+     | TPlus
+     | TMinus
+     | TStar
+     | TSlash
+     | TWhile
+     | TDo
+     | TDone
      | TIf
      | TThen
      | TElse
-     | TIsZero
+     | TEndif
+     | TColon
+     | TSemiColon
+     | TEqual
+     | TPrint
+     | TRead
+	 | TIntLiteral Int
+	 | TFloatLiteral Int
+	 | TStringLiteral String
      | TEOF
      deriving (Eq,Show)
 
 
---2nd part
+
 -- The functions that must be provided to Alex's basic interface
 type AlexInput = [Word8]
 alexGetByte :: AlexInput -> Maybe (Word8,AlexInput)

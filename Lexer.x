@@ -18,7 +18,7 @@ tokens :-
        iszero			{TIsZero}
 
 {
-data Token = 
+data Token =
      TTrue
      | TFalse
      | TZero
