@@ -52,6 +52,10 @@ Literal:
      | string_lit      { StringLit }
      | int_lit          { IntLit }
 
+
+StatementList :
+    Statement               { [ $1] }
+    | StatementList Statement   { $2 : $1 }
 Statement :
     if  Exp then  StatementList else StatementList endif { SIf $2 $4 $6 }
     | while  Exp do StatementList done                { SWhile $2 $4 }
@@ -60,19 +64,21 @@ Statement :
     | var Id ":" Type ";"    { SDec $2 $4 }
     | Id "=" Exp ";"         { SAssign $1 $3}
 
-StatementList :
-    Statement               { StatementList Empty $1 }
-    | StatementList Statement   { StatementList $1 $2 }
 
 Exp :
-    Exp "+" Exp                { EPlus $1 $3}
---    | Exp "-" Exp                { EMinus $1 $3}
---    | Exp "*" Exp                { EStar $1 $3}
---    | Exp "/" Exp                { ESlash $1 $3}
-    | "(" Exp ")"                 { ExpPar $2 }
---    | "-" Exp  %prec NEG         { ENeg $2}
-    | Literal                 {ELit}
-    | Id                      { EId}
+    Exp "+" Term                { EPlus $1 $3}
+    | Exp "-" Term              { EMinus $1 $3}
+    | Term {ETerm $1}
+Term :
+    Term "*" Factor                { TTimes $1 $3}
+    | Term "/" Factor                { TDiv $1 $3}
+    | Factor {TFac $1}
+
+Factor :
+    "(" Exp ")"         { FPar $2 }
+    | "-" Factor          { FNeg $2}
+    | Literal                 {FLit}
+    | Id                      { FId}
 
 {
 
@@ -105,24 +111,32 @@ data Statement
     | SDec Id Type
     deriving (Show, Eq)
 
-data StatementList
-    = StatementList Statement
-    | Empty
-    deriving (Show, Eq)
+--data StatementList
+--  = StatementList Statement
+-- | Empty
+--deriving (Show, Eq)
 
 
 data Exp
-    = EPlus Exp Exp
-    | EMinus Exp Exp
-    | EStar Exp Exp
-    | ESlash Exp Exp
-    | ENeg Exp
-    | EPar Exp
-    | ELit
-    | EId
+    = EPlus Exp Term
+    | EMinus Exp Term
+    | ETerm Term
     deriving (Show, Eq)
 
+data Term
+    = TTimes Term Factor
+    | TDiv Term Factor
+    | TFac Factor
+    deriving (Show, Eq)
 
+data Factor
+    = FPar Exp
+    | FNeg Factor
+    | FLit
+    | FId
+    deriving (Show, Eq)
+
+type StatementList = [Statement]
 type Id = String
 --type Integer_Literal = Int
 --type Float_Literal = Float
@@ -130,7 +144,7 @@ type Id = String
 
 main = do
   inStr <- getContents
-  let parseTree = parse (alexScanTokens inStr)
+  let parseTree = parse (scan inStr)
   putStrLn ("parseTree: " ++ show(parseTree))
   print "done"
 }
