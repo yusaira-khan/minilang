@@ -1,4 +1,4 @@
-module Paths_minlang (
+module Paths_minilang (
     version,
     getBinDir, getLibDir, getDataDir, getLibexecDir,
     getDataFileName, getSysconfDir
@@ -17,17 +17,17 @@ version = Version [0,1,0,0] []
 bindir, libdir, datadir, libexecdir, sysconfdir :: FilePath
 
 bindir     = "/home/yusaira-khan/.cabal/bin"
-libdir     = "/home/yusaira-khan/.cabal/lib/x86_64-linux-ghc-7.8.4/minlang-0.1.0.0"
-datadir    = "/home/yusaira-khan/.cabal/share/x86_64-linux-ghc-7.8.4/minlang-0.1.0.0"
+libdir     = "/home/yusaira-khan/.cabal/lib/x86_64-linux-ghc-7.8.4/minilang-0.1.0.0"
+datadir    = "/home/yusaira-khan/.cabal/share/x86_64-linux-ghc-7.8.4/minilang-0.1.0.0"
 libexecdir = "/home/yusaira-khan/.cabal/libexec"
 sysconfdir = "/home/yusaira-khan/.cabal/etc"
 
 getBinDir, getLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
-getBinDir = catchIO (getEnv "minlang_bindir") (\_ -> return bindir)
-getLibDir = catchIO (getEnv "minlang_libdir") (\_ -> return libdir)
-getDataDir = catchIO (getEnv "minlang_datadir") (\_ -> return datadir)
-getLibexecDir = catchIO (getEnv "minlang_libexecdir") (\_ -> return libexecdir)
-getSysconfDir = catchIO (getEnv "minlang_sysconfdir") (\_ -> return sysconfdir)
+getBinDir = catchIO (getEnv "minilang_bindir") (\_ -> return bindir)
+getLibDir = catchIO (getEnv "minilang_libdir") (\_ -> return libdir)
+getDataDir = catchIO (getEnv "minilang_datadir") (\_ -> return datadir)
+getLibexecDir = catchIO (getEnv "minilang_libexecdir") (\_ -> return libexecdir)
+getSysconfDir = catchIO (getEnv "minilang_sysconfdir") (\_ -> return sysconfdir)
 
 getDataFileName :: FilePath -> IO FilePath
 getDataFileName name = do
