@@ -1,10 +1,15 @@
 import qualified Lexer as L
 import qualified Parser as P
+import qualified Control.Exception as Exc
+
+handler :: Exc.ErrorCall -> IO ()
+handler ErrorCall msg = putStrLn $ msg
+
+dismiss :: a -> IO ()
+dismiss _ = return ()
+
 main::IO ()
 main = do
- h<-getContents
- putStrLn "Tokens:"
- putStrLn $ show $ L.scan h
- let parseTree = P.parse (L.scan h)
- putStrLn ("parseTree: " ++ show(parseTree))
- putStrLn "done"
+ inp<-getContents
+ Exc.catch (dismiss $ P.parse (L.scan inp)) handler
+ putStrLn "Valid"
