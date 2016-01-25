@@ -81,5 +81,11 @@ data Token =
 main = do
   s <- getContents
   print (alexScanTokens s)
-
+scan str = go ('\n',[],str)
+    where go inp@(_,_bs,str) =
+        case alexScan inp 0 of
+            AlexEOF -> [TEOF]
+            AlexError inp' -> throwError "Invalid" --: " ++ "Lexical error due to character: " ++ show inp'
+            AlexSkip inp' _ -> go inp'
+            AlexToken inp' _ _ -> act $ take len str : go inp'
 }
