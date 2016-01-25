@@ -4,7 +4,6 @@
 
 module Lexer (Token(..),scan,validate) where
 import Control.Monad.State
-import Data.Word
 
 #if __GLASGOW_HASKELL__ >= 603
 #include "ghcconfig.h"
@@ -215,7 +214,7 @@ alex_deflt :: Array Int Int
 alex_deflt = listArray (0,76) [-1,11,11,2,2,-1,-1,-1,-1,13,13,13,-1,13,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
 alex_accept = listArray (0::Int,76) [AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccSkip,AlexAccSkip,AlexAcc (alex_action_2),AlexAcc (alex_action_3),AlexAcc (alex_action_4),AlexAcc (alex_action_5),AlexAcc (alex_action_6),AlexAcc (alex_action_7),AlexAcc (alex_action_8),AlexAcc (alex_action_9),AlexAcc (alex_action_10),AlexAcc (alex_action_11),AlexAcc (alex_action_12),AlexAcc (alex_action_13),AlexAcc (alex_action_14),AlexAcc (alex_action_15),AlexAcc (alex_action_16),AlexAcc (alex_action_17),AlexAcc (alex_action_18),AlexAcc (alex_action_19),AlexAcc (alex_action_20),AlexAcc (alex_action_21),AlexAcc (alex_action_22),AlexAcc (alex_action_23),AlexAcc (alex_action_24),AlexAcc (alex_action_25),AlexAcc (alex_action_26),AlexAcc (alex_action_27),AlexAcc (alex_action_28),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29),AlexAcc (alex_action_29)]
-{-# LINE 48 "Lexer.x" #-}
+{-# LINE 47 "Lexer.x" #-}
 
 -- Each action has type :: String -> Token
 
@@ -252,12 +251,7 @@ data Token =
 
 
 -- Action to read a token
-scan str = go ('\n',[],str)
-    where go inp@(_,_bs,str) = case alexScan inp 0 of
-            AlexEOF -> [TEOF]
-            AlexError inp' -> error "Invalid"
-            AlexSkip inp' _ -> go inp'
-            AlexToken inp' len act -> act (take len str) : go inp'
+scan str = alexScanTokens str
 
 
 
