@@ -6,6 +6,7 @@ import Control.Monad.State
 %wrapper "posn"
 
 $digit = 0-9			-- digits
+$nonzero = 1-9
 $alpha = [a-zA-Z]		-- alphabetic characters
 $graphic    = [$digit  $alpha  [\  ! \? \. \,]]
 
@@ -19,10 +20,11 @@ tokens :-
        int         { \p s -> TIntType p }
        float       { \p s -> TFloatType p }
        string      { \p s -> TStringType p }
-       $digit+              { \p s -> TIntLit p (read s) }
-       $digit+\.$digit+     { \p s -> TFloatLit p (read s) }
+       $nonzero $digit*        { \p s -> TIntLit p (read s) }
+       "0"        { \p s -> TIntLit p (read s) }
+       $nonzero $digit*\.$digit+     { \p s -> TFloatLit p (read s) }
        $digit+\.            { \p s -> TFloatLit p (read $ s ++ "0") }
-       \.$digit+            { \p s -> TFloatLit p (read $ "0" ++ s) }
+       "0"?\.$digit+            { \p s -> TFloatLit p (read $ "0" ++ s) }
        @string      { \p s-> TStringLit p (s) }
        var          { \p s -> TVar p }
        if           { \p s -> TIf p }
@@ -116,18 +118,8 @@ getColumnNum (AlexPn offset lineNum colNum) = colNum
 scan str = go (alexStartPos,'\n',[],str)
     where go inp@(pos,_,_,str) = case alexScan inp 0 of
             AlexEOF -> [TEOF ]
-            AlexError inp' -> error ( "Invalid  lexical error @ line " ++ show (getLineNum  pos) ++ " and column " ++ show ( getColumnNum  pos))
+            AlexError inp' -> error ( "Invalid\nLexical error @ line " ++ show (getLineNum  pos) ++ " and column " ++ show ( getColumnNum  pos))
             AlexSkip inp' _ -> go inp'
             AlexToken inp' len act -> act pos (take len str) : go inp'
 
-
-
---validate = do
-  --  s <- getContents
-    --go ('\n',[],s)
-    --where go inp@(_,_bs,str) = case alexScan inp 0 of
-      --      AlexEOF -> putStrLn "Valid"
-        --    AlexError inp' -> putStrLn $ "Invalid"
-          --  AlexSkip inp' _ -> go inp'
-            --AlexToken inp' _ _ -> go inp'
 }    

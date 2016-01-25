@@ -5,11 +5,10 @@ import qualified Control.Exception as Exc
 handler :: Exc.ErrorCall -> IO ()
 handler (Exc.ErrorCall msg) = putStrLn $ msg
 
-dismiss :: a -> IO ()
-dismiss _ = return ()
+dismiss :: String -> IO ()
+dismiss b = if b /= "" then putStrLn "Valid" else putStrLn "Invalid\n empty progam"
 
 main::IO ()
 main = do
  inp<-getContents
- Exc.catch (dismiss $ P.parse $ L.scan inp) handler
- putStrLn "Valid"
+ Exc.catch (dismiss.show $P.parse $ L.scan inp) handler

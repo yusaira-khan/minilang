@@ -84,7 +84,7 @@ Factor :
 parseError :: [Token] -> a
 parseError tokenList = let pos = tokenPosn(head(tokenList))
   in
-  error ("Invalid parse error at line " ++ show(getLineNum(pos)) ++ " and column " ++ show(getColumnNum(pos)) ++ " Token " ++ show(head tokenList))
+  error ("Invalid \nParse error @ line " ++ show(getLineNum(pos)) ++ " and column " ++ show(getColumnNum(pos)))
 
 
 data Program
