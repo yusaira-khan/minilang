@@ -2,7 +2,7 @@
 {-# LANGUAGE CPP,MagicHash #-}
 {-# LINE 1 "Lexer.x" #-}
 
-module Lexer (Token(..),scan,validate) where
+module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn) where
 import Control.Monad.State
 
 #if __GLASGOW_HASKELL__ >= 603
@@ -118,7 +118,25 @@ type Byte = Word8
 -- -----------------------------------------------------------------------------
 -- The input type
 
-{-# LINE 79 "templates/wrappers.hs" #-}
+
+type AlexInput = (AlexPosn,     -- current position,
+                  Char,         -- previous char
+                  [Byte],       -- pending bytes on current char
+                  String)       -- current input string
+
+ignorePendingBytes :: AlexInput -> AlexInput
+ignorePendingBytes (p,c,ps,s) = (p,c,[],s)
+
+alexInputPrevChar :: AlexInput -> Char
+alexInputPrevChar (p,c,bs,s) = c
+
+alexGetByte :: AlexInput -> Maybe (Byte,AlexInput)
+alexGetByte (p,c,(b:bs),s) = Just (b,(p,c,bs,s))
+alexGetByte (p,c,[],[]) = Nothing
+alexGetByte (p,_,[],(c:s))  = let p' = alexMove p c 
+                                  (b:bs) = utf8Encode c
+                              in p' `seq`  Just (b, (p', c, bs, s))
+
 
 {-# LINE 101 "templates/wrappers.hs" #-}
 
@@ -136,7 +154,18 @@ type Byte = Word8
 -- `move_pos' calculates the new position after traversing a given character,
 -- assuming the usual eight character tab stops.
 
-{-# LINE 160 "templates/wrappers.hs" #-}
+
+data AlexPosn = AlexPn !Int !Int !Int
+        deriving (Eq,Show)
+
+alexStartPos :: AlexPosn
+alexStartPos = AlexPn 0 1 1
+
+alexMove :: AlexPosn -> Char -> AlexPosn
+alexMove (AlexPn a l c) '\t' = AlexPn (a+1)  l     (((c+alex_tab_size-1) `div` alex_tab_size)*alex_tab_size+1)
+alexMove (AlexPn a l c) '\n' = AlexPn (a+1) (l+1)   1
+alexMove (AlexPn a l c) _    = AlexPn (a+1)  l     (c+1)
+
 
 -- -----------------------------------------------------------------------------
 -- Default monad
@@ -153,28 +182,7 @@ type Byte = Word8
 -- -----------------------------------------------------------------------------
 -- Basic wrapper
 
-
-type AlexInput = (Char,[Byte],String)
-
-alexInputPrevChar :: AlexInput -> Char
-alexInputPrevChar (c,_,_) = c
-
--- alexScanTokens :: String -> [token]
-alexScanTokens str = go ('\n',[],str)
-  where go inp@(_,_bs,s) =
-          case alexScan inp 0 of
-                AlexEOF -> []
-                AlexError _ -> error "lexical error"
-                AlexSkip  inp' len     -> go inp'
-                AlexToken inp' len act -> act (take len s) : go inp'
-
-alexGetByte :: AlexInput -> Maybe (Byte,AlexInput)
-alexGetByte (c,(b:bs),s) = Just (b,(c,bs,s))
-alexGetByte (c,[],[])    = Nothing
-alexGetByte (_,[],(c:s)) = case utf8Encode c of
-                             (b:bs) -> Just (b, (c, bs, s))
-                             [] -> Nothing
-
+{-# LINE 401 "templates/wrappers.hs" #-}
 
 
 -- -----------------------------------------------------------------------------
@@ -190,7 +198,16 @@ alexGetByte (_,[],(c:s)) = case utf8Encode c of
 
 -- Adds text positions to the basic model.
 
-{-# LINE 454 "templates/wrappers.hs" #-}
+
+--alexScanTokens :: String -> [token]
+alexScanTokens str = go (alexStartPos,'\n',[],str)
+  where go inp@(pos,_,_,str) =
+          case alexScan inp 0 of
+                AlexEOF -> []
+                AlexError ((AlexPn _ line column),_,_,_) -> error $ "lexical error at line " ++ (show line) ++ ", column " ++ (show column)
+                AlexSkip  inp' len     -> go inp'
+                AlexToken inp' len act -> act pos (take len str) : go inp'
+
 
 
 -- -----------------------------------------------------------------------------
@@ -225,83 +242,116 @@ alex_accept = listArray (0::Int,76) [AlexAccNone,AlexAccNone,AlexAccNone,AlexAcc
 
 -- The token type:
 data Token =
-     TVar
-     | TId String
-     | TLeftParen
-	 | TRightParen
-     | TPlus
-     | TMinus
-     | TStar
-     | TSlash
-     | TWhile
-     | TDo
-     | TDone
-     | TIf
-     | TThen
-     | TElse
-     | TEndif
-     | TColon
-     | TSemiColon
-     | TEquals
-     | TPrint
-     | TRead
-     | TIntType
-	 | TFloatType
-	 | TStringType
-	 | TIntLit Int
-	 | TFloatLit Float
-	 | TStringLit String
+     TVar AlexPosn
+     | TId AlexPosn String
+     | TLeftParen AlexPosn
+	 | TRightParen AlexPosn
+     | TPlus AlexPosn
+     | TMinus AlexPosn
+     | TStar AlexPosn
+     | TSlash AlexPosn
+     | TWhile AlexPosn
+     | TDo AlexPosn
+     | TDone AlexPosn
+     | TIf AlexPosn
+     | TThen AlexPosn
+     | TElse AlexPosn
+     | TEndif AlexPosn
+     | TColon AlexPosn
+     | TSemiColon AlexPosn
+     | TEquals AlexPosn
+     | TPrint AlexPosn
+     | TRead AlexPosn
+     | TIntType AlexPosn
+	 | TFloatType AlexPosn
+	 | TStringType AlexPosn
+	 | TIntLit AlexPosn Int
+	 | TFloatLit AlexPosn Float
+	 | TStringLit AlexPosn String
      | TEOF
      deriving (Eq,Show)
 
+tokenPosn (TVar p) = p
+tokenPosn (TId p _) = p
+tokenPosn (TLeftParen p) = p
+tokenPosn (TRightParen p) = p
+tokenPosn (TPlus p) = p
+tokenPosn (TMinus p) = p
+tokenPosn (TStar p) = p
+tokenPosn (TSlash p) = p
+tokenPosn (TWhile p) = p
+tokenPosn (TDo p) = p
+tokenPosn (TDone p) = p
+tokenPosn (TIf p) = p
+tokenPosn (TElse p) = p
+tokenPosn (TThen p) = p
+tokenPosn (TEndif p) = p
+tokenPosn (TColon p) = p
+tokenPosn (TSemiColon p) = p
+tokenPosn (TEquals p) = p
+tokenPosn (TPrint p) = p
+tokenPosn (TRead p) = p
+tokenPosn (TIntType p) = p
+tokenPosn (TFloatType p) = p
+tokenPosn (TStringType p) = p
+tokenPosn (TIntLit p i) = p
+tokenPosn (TStringLit p str) = p
+tokenPosn (TFloatLit p c) = p
+tokenPosn (TEOF ) = error "EOF shouldn't have errors"
+
+getLineNum :: AlexPosn -> Int
+getLineNum (AlexPn offset lineNum colNum) = lineNum
+
+getColumnNum :: AlexPosn -> Int
+getColumnNum (AlexPn offset lineNum colNum) = colNum
 
 -- Action to read a token
-scan str = go ('\n',[],str)
-    where go inp@(_,_bs,str) = case alexScan inp 0 of
-            AlexEOF -> [TEOF]
-            AlexError inp' -> error "Invalid"
+scan str = go (alexStartPos,'\n',[],str)
+    where go inp@(pos,_,_,str) = case alexScan inp 0 of
+            AlexEOF -> [TEOF ]
+            AlexError inp' -> error ( "Invalid  lexical error @ line " ++ show (getLineNum  pos) ++ " and column " ++ show ( getColumnNum  pos))
             AlexSkip inp' _ -> go inp'
-            AlexToken inp' len act -> act (take len str) : go inp'
+            AlexToken inp' len act -> act pos (take len str) : go inp'
 
 
 
-validate = do
-    s <- getContents
-    go ('\n',[],s)
-    where go inp@(_,_bs,str) = case alexScan inp 0 of
-            AlexEOF -> putStrLn "Valid"
-            AlexError inp' -> putStrLn $ "Invalid"
-            AlexSkip inp' _ -> go inp'
-            AlexToken inp' _ _ -> go inp'
+--validate = do
+  --  s <- getContents
+    --go ('\n',[],s)
+    --where go inp@(_,_bs,str) = case alexScan inp 0 of
+      --      AlexEOF -> putStrLn "Valid"
+        --    AlexError inp' -> putStrLn $ "Invalid"
+          --  AlexSkip inp' _ -> go inp'
+            --AlexToken inp' _ _ -> go inp'
 
-alex_action_2 =  \s -> TIntType 
-alex_action_3 =  \s -> TFloatType 
-alex_action_4 =  \s -> TStringType 
-alex_action_5 =  \s -> TIntLit (read s) 
-alex_action_6 =  \s -> TFloatLit (read s) 
-alex_action_7 =  \s -> TFloatLit (read $ s ++ "0") 
-alex_action_8 =  \s -> TFloatLit (read $ "0" ++ s) 
-alex_action_9 =  \s-> TStringLit (s) 
-alex_action_10 =  \s -> TVar 
-alex_action_11 =  \s -> TIf 
-alex_action_12 =  \s -> TThen 
-alex_action_13 =  \s -> TElse 
-alex_action_14 =  \s -> TEndif 
-alex_action_15 =  \s -> TWhile 
-alex_action_16 =  \s -> TDo 
-alex_action_17 =  \s -> TDone 
-alex_action_18 =  \s -> TEquals 
-alex_action_19 =  \s -> TSemiColon 
-alex_action_20 =  \s -> TColon 
-alex_action_21 =  \s -> TPlus 
-alex_action_22 =  \s -> TMinus 
-alex_action_23 =  \s -> TStar 
-alex_action_24 =  \s -> TSlash 
-alex_action_25 =  \s -> TLeftParen 
-alex_action_26 =  \s -> TRightParen 
-alex_action_27 =  \s -> TPrint 
-alex_action_28 =  \s -> TRead 
-alex_action_29 =  \s -> TId (s) 
+alex_action_2 =  \p s -> TIntType p 
+alex_action_3 =  \p s -> TFloatType p 
+alex_action_4 =  \p s -> TStringType p 
+alex_action_5 =  \p s -> TIntLit p (read s) 
+alex_action_6 =  \p s -> TFloatLit p (read s) 
+alex_action_7 =  \p s -> TFloatLit p (read $ s ++ "0") 
+alex_action_8 =  \p s -> TFloatLit p (read $ "0" ++ s) 
+alex_action_9 =  \p s-> TStringLit p (s) 
+alex_action_10 =  \p s -> TVar p 
+alex_action_11 =  \p s -> TIf p 
+alex_action_12 =  \p s -> TThen p 
+alex_action_13 =  \p s -> TElse p 
+alex_action_14 =  \p s -> TEndif p 
+alex_action_15 =  \p s -> TWhile p 
+alex_action_16 =  \p s -> TDo p 
+alex_action_17 =  \p s -> TDone p 
+alex_action_18 =  \p s -> TEquals p 
+alex_action_19 =  \p s -> TSemiColon  p
+alex_action_20 =  \p s -> TColon p 
+alex_action_21 =  \p s -> TPlus p 
+alex_action_22 =  \p s -> TMinus p 
+alex_action_23 =  \p s -> TStar p 
+alex_action_24 =  \p s -> TSlash p 
+alex_action_25 =  \p s -> TLeftParen p 
+alex_action_26 =  \p s -> TRightParen p 
+alex_action_27 =  \p s -> TPrint p 
+alex_action_28 =  \p s -> TRead p 
+alex_action_29 =  \p s -> TId p (s) 
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}

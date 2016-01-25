@@ -8,32 +8,32 @@ import  Lexer
 %tokentype { Token }
 %error { parseError }
 %token
-       int          {  TIntType }
-       float        {  TFloatType }
-       string       {  TStringType }
-       int_lit      {  TIntLit $$ }
-       float_lit    {  TFloatLit $$ }
-       string_lit   {  TStringLit $$ }
-       var          {  TVar }
-       if           {  TIf }
-       then         {  TThen }
-       else         {  TElse }
-       endif        {  TEndif }
-       while        {  TWhile }
-       do   		{  TDo }
-       done		    {  TDone }
-       "="			{  TEquals }
-       ";" 			{  TSemiColon }
-       ":" 			{  TColon }
-       "+" 			{  TPlus }
-       "-" 			{  TMinus }
-       "*" 			{  TStar }
-       "/" 			{  TSlash }
-       "("			{  TLeftParen }
-       ")"			{  TRightParen }
-       print        {  TPrint }
-       read         {  TRead }
-       Id           {  TId $$ }
+       int          {  TIntType _ }
+       float        {  TFloatType _ }
+       string       {  TStringType _ }
+       Integer_Literal      {  TIntLit _ $$ }
+       Float_Literal    {  TFloatLit _ $$ }
+       String_Literal   {  TStringLit _ $$ }
+       var          {  TVar _ }
+       if           {  TIf _ }
+       then         {  TThen _ }
+       else         {  TElse _ }
+       endif        {  TEndif _ }
+       while        {  TWhile _ }
+       do   		{  TDo _ }
+       done		    {  TDone _ }
+       "="			{  TEquals _ }
+       ";" 			{  TSemiColon _ }
+       ":" 			{  TColon _ }
+       "+" 			{  TPlus _ }
+       "-" 			{  TMinus _ }
+       "*" 			{  TStar _ }
+       "/" 			{  TSlash _ }
+       "("			{  TLeftParen _ }
+       ")"			{  TRightParen _ }
+       print        {  TPrint _ }
+       read         {  TRead _ }
+       Id           {  TId _ $$ }
        eof          {  TEOF }
 %left '+' '-'
 %left '*' '/'
@@ -47,15 +47,12 @@ Type :
      float    { TypeFloat }
      | string      { TypeString }
      | int          { TypeInt }
-Literal:
-     float_lit   { FloatLit }
-     | string_lit      { StringLit }
-     | int_lit          { IntLit }
 
 
 StatementList :
     Statement               { [ $1] }
-    | StatementList Statement   { $2 : $1 }
+    |  Statement StatementList   { $1 : $2 }
+
 Statement :
     if  Exp then  StatementList else StatementList endif { SIf $2 $4 $6 }
     | while  Exp do StatementList done                { SWhile $2 $4 }
@@ -77,13 +74,17 @@ Term :
 Factor :
     "(" Exp ")"         { FPar $2 }
     | "-" Factor          { FNeg $2}
-    | Literal                 {FLit}
+    | Float_Literal       {FFLit}
+    | String_Literal      {FSLit}
+    | Integer_Literal         {FILit}
     | Id                      { FId}
 
 {
 
 parseError :: [Token] -> a
-parseError _ = error "Parse error"
+parseError tokenList = let pos = tokenPosn(head(tokenList))
+  in
+  error ("Invalid parse error at line " ++ show(getLineNum(pos)) ++ " and column " ++ show(getColumnNum(pos)) ++ " Token " ++ show(head tokenList))
 
 
 data Program
@@ -96,12 +97,6 @@ data Type =
     | TypeString
     deriving (Show, Eq)
 
-data Literal =
-     FloatLit Float
-     | StringLit String
-     |  IntLit Int
-     deriving (Show, Eq)
-
 data Statement
     = SIf Exp StatementList StatementList
     | SWhile Exp StatementList
@@ -110,12 +105,6 @@ data Statement
     | SAssign Id Exp
     | SDec Id Type
     deriving (Show, Eq)
-
---data StatementList
---  = StatementList Statement
--- | Empty
---deriving (Show, Eq)
-
 
 data Exp
     = EPlus Exp Term
@@ -132,19 +121,17 @@ data Term
 data Factor
     = FPar Exp
     | FNeg Factor
-    | FLit
+    | FFLit
+    | FILit
+    | FSLit
     | FId
     deriving (Show, Eq)
 
 type StatementList = [Statement]
 type Id = String
---type Integer_Literal = Int
---type Float_Literal = Float
---type String_Literal = String
+type Integer_Literal = Int
+type Float_Literal = Float
+type String_Literal = String
 
-main = do
-  inStr <- getContents
-  let parseTree = parse (scan inStr)
-  putStrLn ("parseTree: " ++ show(parseTree))
-  print "done"
+
 }

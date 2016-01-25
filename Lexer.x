@@ -1,9 +1,9 @@
 {
-module Lexer (Token(..),scan,validate) where
+module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn) where
 import Control.Monad.State
 }
 
-%wrapper "basic"
+%wrapper "posn"
 
 $digit = 0-9			-- digits
 $alpha = [a-zA-Z]		-- alphabetic characters
@@ -16,85 +16,118 @@ $graphic    = [$digit  $alpha  [\  ! \? \. \,]]
 tokens :-
        $white+			;
        "#".*            ;
-       int         { \s -> TIntType }
-       float       { \s -> TFloatType }
-       string      { \s -> TStringType }
-       $digit+              { \s -> TIntLit (read s) }
-       $digit+\.$digit+     { \s -> TFloatLit (read s) }
-       $digit+\.            { \s -> TFloatLit (read $ s ++ "0") }
-       \.$digit+            { \s -> TFloatLit (read $ "0" ++ s) }
-       @string      { \s-> TStringLit (s) }
-       var          { \s -> TVar }
-       if           { \s -> TIf }
-       then         { \s -> TThen }
-       else         { \s -> TElse }
-       endif        { \s -> TEndif }
-       while        { \s -> TWhile }
-       do   		{ \s -> TDo }
-       done		    { \s -> TDone }
-       "="			{ \s -> TEquals }
-       ";" 			{ \s -> TSemiColon }
-       ":" 			{ \s -> TColon }
-       "+" 			{ \s -> TPlus }
-       "-" 			{ \s -> TMinus }
-       "*" 			{ \s -> TStar }
-       "/" 			{ \s -> TSlash }
-       "("			{ \s -> TLeftParen }
-       ")"			{ \s -> TRightParen }
-       print        { \s -> TPrint }
-       read         { \s -> TRead }
-       $alpha[$alpha $digit \_ ]* { \s -> TId (s) }
+       int         { \p s -> TIntType p }
+       float       { \p s -> TFloatType p }
+       string      { \p s -> TStringType p }
+       $digit+              { \p s -> TIntLit p (read s) }
+       $digit+\.$digit+     { \p s -> TFloatLit p (read s) }
+       $digit+\.            { \p s -> TFloatLit p (read $ s ++ "0") }
+       \.$digit+            { \p s -> TFloatLit p (read $ "0" ++ s) }
+       @string      { \p s-> TStringLit p (s) }
+       var          { \p s -> TVar p }
+       if           { \p s -> TIf p }
+       then         { \p s -> TThen p }
+       else         { \p s -> TElse p }
+       endif        { \p s -> TEndif p }
+       while        { \p s -> TWhile p }
+       do   		{ \p s -> TDo p }
+       done		    { \p s -> TDone p }
+       "="			{ \p s -> TEquals p }
+       ";" 			{ \p s -> TSemiColon  p}
+       ":" 			{ \p s -> TColon p }
+       "+" 			{ \p s -> TPlus p }
+       "-" 			{ \p s -> TMinus p }
+       "*" 			{ \p s -> TStar p }
+       "/" 			{ \p s -> TSlash p }
+       "("			{ \p s -> TLeftParen p }
+       ")"			{ \p s -> TRightParen p }
+       print        { \p s -> TPrint p }
+       read         { \p s -> TRead p }
+       $alpha[$alpha $digit \_ ]* { \p s -> TId p (s) }
 {
 -- Each action has type :: String -> Token
 
 -- The token type:
 data Token =
-     TVar
-     | TId String
-     | TLeftParen
-	 | TRightParen
-     | TPlus
-     | TMinus
-     | TStar
-     | TSlash
-     | TWhile
-     | TDo
-     | TDone
-     | TIf
-     | TThen
-     | TElse
-     | TEndif
-     | TColon
-     | TSemiColon
-     | TEquals
-     | TPrint
-     | TRead
-     | TIntType
-	 | TFloatType
-	 | TStringType
-	 | TIntLit Int
-	 | TFloatLit Float
-	 | TStringLit String
+     TVar AlexPosn
+     | TId AlexPosn String
+     | TLeftParen AlexPosn
+	 | TRightParen AlexPosn
+     | TPlus AlexPosn
+     | TMinus AlexPosn
+     | TStar AlexPosn
+     | TSlash AlexPosn
+     | TWhile AlexPosn
+     | TDo AlexPosn
+     | TDone AlexPosn
+     | TIf AlexPosn
+     | TThen AlexPosn
+     | TElse AlexPosn
+     | TEndif AlexPosn
+     | TColon AlexPosn
+     | TSemiColon AlexPosn
+     | TEquals AlexPosn
+     | TPrint AlexPosn
+     | TRead AlexPosn
+     | TIntType AlexPosn
+	 | TFloatType AlexPosn
+	 | TStringType AlexPosn
+	 | TIntLit AlexPosn Int
+	 | TFloatLit AlexPosn Float
+	 | TStringLit AlexPosn String
      | TEOF
      deriving (Eq,Show)
 
+tokenPosn (TVar p) = p
+tokenPosn (TId p _) = p
+tokenPosn (TLeftParen p) = p
+tokenPosn (TRightParen p) = p
+tokenPosn (TPlus p) = p
+tokenPosn (TMinus p) = p
+tokenPosn (TStar p) = p
+tokenPosn (TSlash p) = p
+tokenPosn (TWhile p) = p
+tokenPosn (TDo p) = p
+tokenPosn (TDone p) = p
+tokenPosn (TIf p) = p
+tokenPosn (TElse p) = p
+tokenPosn (TThen p) = p
+tokenPosn (TEndif p) = p
+tokenPosn (TColon p) = p
+tokenPosn (TSemiColon p) = p
+tokenPosn (TEquals p) = p
+tokenPosn (TPrint p) = p
+tokenPosn (TRead p) = p
+tokenPosn (TIntType p) = p
+tokenPosn (TFloatType p) = p
+tokenPosn (TStringType p) = p
+tokenPosn (TIntLit p i) = p
+tokenPosn (TStringLit p str) = p
+tokenPosn (TFloatLit p c) = p
+tokenPosn (TEOF ) = error "EOF shouldn't have errors"
+
+getLineNum :: AlexPosn -> Int
+getLineNum (AlexPn offset lineNum colNum) = lineNum
+
+getColumnNum :: AlexPosn -> Int
+getColumnNum (AlexPn offset lineNum colNum) = colNum
 
 -- Action to read a token
-scan str = go ('\n',[],str)
-    where go inp@(_,_bs,str) = case alexScan inp 0 of
-            AlexEOF -> [TEOF]
-            AlexError inp' -> error "Invalid"
+scan str = go (alexStartPos,'\n',[],str)
+    where go inp@(pos,_,_,str) = case alexScan inp 0 of
+            AlexEOF -> [TEOF ]
+            AlexError inp' -> error ( "Invalid  lexical error @ line " ++ show (getLineNum  pos) ++ " and column " ++ show ( getColumnNum  pos))
             AlexSkip inp' _ -> go inp'
-            AlexToken inp' len act -> act (take len str) : go inp'
+            AlexToken inp' len act -> act pos (take len str) : go inp'
 
 
 
-validate = do
-    s <- getContents
-    go ('\n',[],s)
-    where go inp@(_,_bs,str) = case alexScan inp 0 of
-            AlexEOF -> putStrLn "Valid"
-            AlexError inp' -> putStrLn $ "Invalid"
-            AlexSkip inp' _ -> go inp'
-            AlexToken inp' _ _ -> go inp'
+--validate = do
+  --  s <- getContents
+    --go ('\n',[],s)
+    --where go inp@(_,_bs,str) = case alexScan inp 0 of
+      --      AlexEOF -> putStrLn "Valid"
+        --    AlexError inp' -> putStrLn $ "Invalid"
+          --  AlexSkip inp' _ -> go inp'
+            --AlexToken inp' _ _ -> go inp'
 }    
