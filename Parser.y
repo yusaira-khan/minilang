@@ -66,9 +66,9 @@ StatementList :
 
 Exp :
     Exp "+" Exp                { EPlus $1 $3}
-    | Exp "-" Exp                { EMinus $1 $3}
-    | Exp "*" Exp                { EStar $1 $3}
-    | Exp "/" Exp                { ESlash $1 $3}
+--    | Exp "-" Exp                { EMinus $1 $3}
+--    | Exp "*" Exp                { EStar $1 $3}
+--    | Exp "/" Exp                { ESlash $1 $3}
     | "(" Exp ")"                 { ExpPar $2 }
 --    | "-" Exp  %prec NEG         { ENeg $2}
     | Literal                 {ELit}
