@@ -1,6 +1,5 @@
 {
 module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn) where
-import Control.Monad.State
 }
 
 %wrapper "posn"
@@ -17,15 +16,22 @@ $graphic    = [$digit  $alpha  [\  ! \? \. \,]]
 tokens :-
        $white+			;
        "#".*            ;
+--types separate from literals
        int         { \p s -> TIntType p }
        float       { \p s -> TFloatType p }
        string      { \p s -> TStringType p }
+
+--precautions so that multiple zeroes don't count as a number
        $nonzero $digit*        { \p s -> TIntLit p (read s) }
        "0"        { \p s -> TIntLit p (read s) }
        $nonzero $digit*\.$digit+     { \p s -> TFloatLit p (read s) }
        $nonzero $digit*\.            { \p s -> TFloatLit p (read $ s ++ "0") }
        "0"?\.$digit+            { \p s -> TFloatLit p (read $ "0" ++ s) }
+
+--acceptible characters in string listed above
        @string      { \p s-> TStringLit p (s) }
+
+--keywords
        var          { \p s -> TVar p }
        if           { \p s -> TIf p }
        then         { \p s -> TThen p }
@@ -36,6 +42,7 @@ tokens :-
        done		    { \p s -> TDone p }
        "="			{ \p s -> TEquals p }
        ";" 			{ \p s -> TSemiColon  p}
+-- operators
        ":" 			{ \p s -> TColon p }
        "+" 			{ \p s -> TPlus p }
        "-" 			{ \p s -> TMinus p }
@@ -43,8 +50,10 @@ tokens :-
        "/" 			{ \p s -> TSlash p }
        "("			{ \p s -> TLeftParen p }
        ")"			{ \p s -> TRightParen p }
+-- IO
        print        { \p s -> TPrint p }
        read         { \p s -> TRead p }
+--var
        $alpha[$alpha $digit \_ ]* { \p s -> TId p (s) }
 {
 -- Each action has type :: String -> Token
@@ -80,6 +89,8 @@ data Token =
      | TEOF
      deriving (Eq,Show)
 
+
+--getting position information for error messages
 tokenPosn (TVar p) = p
 tokenPosn (TId p _) = p
 tokenPosn (TLeftParen p) = p

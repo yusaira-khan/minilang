@@ -3,7 +3,6 @@
 {-# LINE 1 "Lexer.x" #-}
 
 module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn) where
-import Control.Monad.State
 
 #if __GLASGOW_HASKELL__ >= 603
 #include "ghcconfig.h"
@@ -236,7 +235,7 @@ alex_deflt :: AlexAddr
 alex_deflt = AlexA# "\xff\xff\x0b\x00\x0b\x00\x02\x00\x02\x00\xff\xff\xff\xff\xff\xff\xff\xff\x0d\x00\x0d\x00\x0d\x00\xff\xff\x0d\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"#
 
 alex_accept = listArray (0::Int,77) [AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccNone,AlexAccSkip,AlexAccSkip,AlexAcc (alex_action_2),AlexAcc (alex_action_3),AlexAcc (alex_action_4),AlexAcc (alex_action_5),AlexAcc (alex_action_6),AlexAcc (alex_action_7),AlexAcc (alex_action_8),AlexAcc (alex_action_9),AlexAcc (alex_action_10),AlexAcc (alex_action_11),AlexAcc (alex_action_12),AlexAcc (alex_action_13),AlexAcc (alex_action_14),AlexAcc (alex_action_15),AlexAcc (alex_action_16),AlexAcc (alex_action_17),AlexAcc (alex_action_18),AlexAcc (alex_action_19),AlexAcc (alex_action_20),AlexAcc (alex_action_21),AlexAcc (alex_action_22),AlexAcc (alex_action_23),AlexAcc (alex_action_24),AlexAcc (alex_action_25),AlexAcc (alex_action_26),AlexAcc (alex_action_27),AlexAcc (alex_action_28),AlexAcc (alex_action_29),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30),AlexAcc (alex_action_30)]
-{-# LINE 49 "Lexer.x" #-}
+{-# LINE 58 "Lexer.x" #-}
 
 -- Each action has type :: String -> Token
 
@@ -271,6 +270,8 @@ data Token =
      | TEOF
      deriving (Eq,Show)
 
+
+--getting position information for error messages
 tokenPosn (TVar p) = p
 tokenPosn (TId p _) = p
 tokenPosn (TLeftParen p) = p

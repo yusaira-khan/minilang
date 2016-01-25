@@ -53,6 +53,7 @@ StatementList :
     Statement               { [ $1] }
     |  Statement StatementList   { $1 : $2 }
 
+--types of statements
 Statement :
     if  Exp then  StatementList else StatementList endif { SIf $2 $4 $6 }
     | while  Exp do StatementList done                { SWhile $2 $4 }
@@ -61,7 +62,7 @@ Statement :
     | var Id ":" Type ";"    { SDec $2 $4 }
     | Id "=" Exp ";"         { SAssign $1 $3}
 
-
+--forced reductions
 Exp :
     Exp "+" Term                { EPlus $1 $3}
     | Exp "-" Term              { EMinus $1 $3}
