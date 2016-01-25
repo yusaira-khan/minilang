@@ -5,7 +5,8 @@ import Data.Word
 
 --2nd part
 data Token =
-     TComment
+     TVar
+     | TId String
      | TLeftParen
 	 | TRightParen
      | TPlus
@@ -21,11 +22,14 @@ data Token =
      | TEndif
      | TColon
      | TSemiColon
-     | TEqual
+     | TEquals
      | TPrint
      | TRead
+     | TIntType
+	 | TFloatType
+	 | TStringType
 	 | TIntLiteral Int
-	 | TFloatLiteral Int
+	 | TFloatLiteral Float
 	 | TStringLiteral String
      | TEOF
      deriving (Eq,Show)
@@ -53,8 +57,8 @@ readToken::P Token
 readToken = do
 	  s <- get
 	  case alexScan s 0 of
-      	        AlexEOF -> return TEOF
-		AlexError _ -> throwError "!Lexical error"
+      	AlexEOF -> return TEOF
+		AlexError _ -> throwError "Invalid program"
 	   	AlexSkip inp' _ -> do
 			  put inp'
 			  readToken
