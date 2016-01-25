@@ -23,7 +23,7 @@ tokens :-
        $nonzero $digit*        { \p s -> TIntLit p (read s) }
        "0"        { \p s -> TIntLit p (read s) }
        $nonzero $digit*\.$digit+     { \p s -> TFloatLit p (read s) }
-       $digit+\.            { \p s -> TFloatLit p (read $ s ++ "0") }
+       $nonzero $digit*\.            { \p s -> TFloatLit p (read $ s ++ "0") }
        "0"?\.$digit+            { \p s -> TFloatLit p (read $ "0" ++ s) }
        @string      { \p s-> TStringLit p (s) }
        var          { \p s -> TVar p }
