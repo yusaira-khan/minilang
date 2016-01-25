@@ -7,7 +7,7 @@ module Main (main) where
 
 $digit = 0-9			-- digits
 $alpha = [a-zA-Z]		-- alphabetic characters
-$graphic    = $printable # $white
+$graphic    = [$digit  $alpha  [\  ! \? \. \,]]
 
 @string     = \" ($graphic # \")* \"
 

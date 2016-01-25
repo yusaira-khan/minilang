@@ -1,5 +1,5 @@
 {
-module Lexer (Token(..),P,evalP,lexer) where
+module Lexer (Token(..),P,evalP,lexer,validator) where
 import Control.Monad.State
 import Control.Monad.Error
 import Data.Word
@@ -9,7 +9,7 @@ import Data.Word
 
 $digit = 0-9			-- digits
 $alpha = [a-zA-Z]		-- alphabetic characters
-$graphic    = $printable # $white
+$graphic    = [$digit  $alpha  [\  ! \? \. \,]]
 
 @string     = \" ($graphic # \")* \"
 
@@ -114,4 +114,5 @@ readToken = do
 lexer::(Token -> P a)->P a
 lexer cont = readToken >>= cont
 
+validator =
 }    
