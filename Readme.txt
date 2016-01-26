@@ -8,7 +8,7 @@ Main file is Main.hs
 Link to executable is ./minilang
 State machin for Parser available in Parser.info
 
-Interface: "./minilang < file"
+Interface: "./minilang  filepath"
 Scans and parses together.
 Prints "Valid" if  parses well
 Prints "Invalid" if scanning or parsing error occurs together with error location
