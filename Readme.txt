@@ -13,3 +13,9 @@ Scans and parses together.
 Prints "Valid" if  parses well
 Prints "Invalid" if scanning or parsing error occurs together with error location
 
+Help for Alex and Happy and error reporting taken from:
+https://github.com/bjwbell/NewL-Compiler
+https://github.com/jmoy/alexhappy
+http://stackoverflow.com/questions/4243117/how-to-catch-and-ignore-a-call-to-the-error-function
+https://www.haskell.org/alex/doc/html/index.html
+https://www.haskell.org/happy/doc/html/index.html

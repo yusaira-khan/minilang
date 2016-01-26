@@ -34,7 +34,7 @@ import  Lexer
        print        {  TPrint _ }
        read         {  TRead _ }
        Id           {  TId _ $$ }
-       eof          {  TEOF }
+       eof          {  TEOF _ }
 %left '+' '-'
 %left '*' '/'
 %left NEG
@@ -57,7 +57,7 @@ StatementList :
 Statement :
     if  Exp then  StatementList else StatementList endif { SIf $2 $4 $6 }
     | while  Exp do StatementList done                { SWhile $2 $4 }
-    | print  Id  ";"         { SPrint $2 }
+    | print  Exp  ";"         { SPrint $2 }
     | read   Id  ";"         { SRead $2 }
     | var Id ":" Type ";"    { SDec $2 $4 }
     | Id "=" Exp ";"         { SAssign $1 $3}
@@ -75,10 +75,10 @@ Term :
 Factor :
     "(" Exp ")"         { FPar $2 }
     | "-" Factor          { FNeg $2}
-    | Float_Literal       {FFLit}
-    | String_Literal      {FSLit}
-    | Integer_Literal         {FILit}
-    | Id                      { FId}
+    | Float_Literal       {FFLit $1}
+    | String_Literal      {FSLit $1}
+    | Integer_Literal         {FILit $1}
+    | Id                      { FId $1}
 
 {
 
@@ -101,7 +101,7 @@ data Type =
 data Statement
     = SIf Exp StatementList StatementList
     | SWhile Exp StatementList
-    | SPrint Id
+    | SPrint Exp
     | SRead Id
     | SAssign Id Exp
     | SDec Id Type
@@ -122,10 +122,10 @@ data Term
 data Factor
     = FPar Exp
     | FNeg Factor
-    | FFLit
-    | FILit
-    | FSLit
-    | FId
+    | FFLit Float_Literal
+    | FILit Integer_Literal
+    | FSLit String_Literal
+    | FId Id
     deriving (Show, Eq)
 
 type StatementList = [Statement]
