@@ -41,13 +41,19 @@ import  Lexer
 %%
 
 Program :
-        StatementList eof { Program $1}
+        DeclarationList StatementList eof { Program $1 $2}
 
 Type :
      float    { TypeFloat }
      | string      { TypeString }
      | int          { TypeInt }
 
+Declaration:
+     var Id ":" Type ";"    { Dec $2 $4 }
+
+DeclarationList :
+    Declaration               { [ $1] }
+    |  Declaration DeclarationList   { $1 : $2 }
 
 StatementList :
     Statement               { [ $1] }
@@ -59,7 +65,6 @@ Statement :
     | while  Exp do StatementList done                { SWhile $2 $4 }
     | print  Exp  ";"         { SPrint $2 }
     | read   Id  ";"         { SRead $2 }
-    | var Id ":" Type ";"    { SDec $2 $4 }
     | Id "=" Exp ";"         { SAssign $1 $3}
 
 --forced reductions
@@ -89,7 +94,11 @@ parseError tokenList = let pos = tokenPosn(head(tokenList))
 
 
 data Program
-    = Program StatementList
+    = Program DeclarationList StatementList
+      deriving (Show, Eq)
+
+data Declaration
+    = Dec Id Type
       deriving (Show, Eq)
 
 data Type =
@@ -104,7 +113,7 @@ data Statement
     | SPrint Exp
     | SRead Id
     | SAssign Id Exp
-    | SDec Id Type
+
     deriving (Show, Eq)
 
 data Exp
@@ -129,6 +138,7 @@ data Factor
     deriving (Show, Eq)
 
 type StatementList = [Statement]
+type DeclarationList = [Declaration]
 type Id = String
 type Integer_Literal = Int
 type Float_Literal = Float

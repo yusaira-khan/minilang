@@ -14,12 +14,12 @@
   (major1) == 4 && (major2) <  7 || \
   (major1) == 4 && (major2) == 7 && (minor) <= 0)
 
-/* package mtl-2.2.1 */
-#define VERSION_mtl "2.2.1"
+/* package mtl-2.1.3.1 */
+#define VERSION_mtl "2.1.3.1"
 #define MIN_VERSION_mtl(major1,major2,minor) (\
   (major1) <  2 || \
-  (major1) == 2 && (major2) <  2 || \
-  (major1) == 2 && (major2) == 2 && (minor) <= 1)
+  (major1) == 2 && (major2) <  1 || \
+  (major1) == 2 && (major2) == 1 && (minor) <= 3)
 
 /* package utf8-string-1.0.1.1 */
 #define VERSION_utf8_string "1.0.1.1"
@@ -34,6 +34,13 @@
   (major1) <  3 || \
   (major1) == 3 && (major2) <  1 || \
   (major1) == 3 && (major2) == 1 && (minor) <= 7)
+
+/* tool c2hs-0.27.1 */
+#define TOOL_VERSION_c2hs "0.27.1"
+#define MIN_TOOL_VERSION_c2hs(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  27 || \
+  (major1) == 0 && (major2) == 27 && (minor) <= 1)
 
 /* tool cpphs-1.19.3 */
 #define TOOL_VERSION_cpphs "1.19.3"
@@ -63,6 +70,13 @@
   (major1) == 7 && (major2) <  8 || \
   (major1) == 7 && (major2) == 8 && (minor) <= 4)
 
+/* tool haddock-2.15.0.2 */
+#define TOOL_VERSION_haddock "2.15.0.2"
+#define MIN_TOOL_VERSION_haddock(major1,major2,minor) (\
+  (major1) <  2 || \
+  (major1) == 2 && (major2) <  15 || \
+  (major1) == 2 && (major2) == 15 && (minor) <= 0)
+
 /* tool happy-1.19.5 */
 #define TOOL_VERSION_happy "1.19.5"
 #define MIN_TOOL_VERSION_happy(major1,major2,minor) (\
@@ -84,12 +98,12 @@
   (major1) == 0 && (major2) <  67 || \
   (major1) == 0 && (major2) == 67 && (minor) <= 0)
 
-/* tool hscolour-1.22 */
-#define TOOL_VERSION_hscolour "1.22"
+/* tool hscolour-1.24 */
+#define TOOL_VERSION_hscolour "1.24"
 #define MIN_TOOL_VERSION_hscolour(major1,major2,minor) (\
   (major1) <  1 || \
-  (major1) == 1 && (major2) <  22 || \
-  (major1) == 1 && (major2) == 22 && (minor) <= 0)
+  (major1) == 1 && (major2) <  24 || \
+  (major1) == 1 && (major2) == 24 && (minor) <= 0)
 
 /* tool pkg-config-0.28 */
 #define TOOL_VERSION_pkg_config "0.28"

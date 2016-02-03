@@ -8,7 +8,7 @@ handler :: Exc.ErrorCall -> IO ()
 handler (Exc.ErrorCall msg) = putStrLn $ msg
 
 checkValidity :: String -> IO ()
-checkValidity parsed = if parsed /= "" then putStrLn "Valid" else putStrLn "Invalid\n empty progam"
+checkValidity parsed = if parsed /= "" then putStrLn parsed else putStrLn "Invalid\n empty progam"
 
 main::IO ()
 main = do
