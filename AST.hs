@@ -77,12 +77,15 @@ printExp (EPlus e t) = " ("++(printExp e ) ++" + " ++(printTerm t) ++") "
 printExp (EMinus e t) = printExp $ EPlus e $  TFac $ FNeg $ FPar $ ETerm t
 printExp (ETerm t) = printTerm t
 
-printFac (FPar e) = " ("++(printExp e)++") "
+printFac (FPar e) = case e of
+    ETerm _ ->t
+    _-> " ("++(t)++") "
+  where t = printExp e
 printFac (FNeg e) = "-" ++(printFac e)
-printFac (FFLit (p,f)) = show f ++ "\t @ " ++ getPosString p
-printFac (FILit (p,i)) = show i  ++ "\t @ " ++ getPosString p
-printFac (FSLit (p,i)) = i  ++ "\t @ " ++ getPosString p
-printFac (FId (p,i)) = i  ++ "\t @ " ++ getPosString p
+printFac (FFLit (p,f)) = show f -- ++ "\t @ " ++ getPosString p
+printFac (FILit (p,i)) = show i -- ++ "\t @ " ++ getPosString p
+printFac (FSLit (p,i)) = i -- ++ "\t @ " ++ getPosString p
+printFac (FId (p,i)) = i -- ++ "\t @ " ++ getPosString p
 
 stmtTree (SAssign (p,i) e) = i ++ "\t" ++ (printExp e)
 stmtTree (SElse e s1 s2) = "if\n"++(printExp e)++ (prettyStmts s1)++"else\n"++(prettyStmts s2)
