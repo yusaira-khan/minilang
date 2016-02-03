@@ -1,6 +1,7 @@
 module Main(main) where
 import qualified Lexer as L
 import qualified Parser as P
+import qualified TypeChecking as T
 import qualified Control.Exception as Exc
 import qualified System.Environment as Env
 import System.IO
