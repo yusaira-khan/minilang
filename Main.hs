@@ -9,7 +9,7 @@ handler :: Exc.ErrorCall -> IO ()
 handler (Exc.ErrorCall msg) = putStrLn $ msg
 
 --checkValidity :: String -> IO ()
-checkValidity parsed = let b = show parsed in if b /= "" then putStrLn b else putStrLn "Invalid\n empty progam"
+checkValidity parsed = let b = show parsed in if b /= "" then putStrLn $ P.prettyProgram parsed else putStrLn "Invalid\n empty progam"
 
 main::IO ()
 main = do

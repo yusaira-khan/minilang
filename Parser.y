@@ -1,5 +1,5 @@
 {
-module Parser(parse) where
+module Parser(parse,prettyProgram) where
 import  Lexer
 import AST
 }

@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -w #-}
 {-# OPTIONS -fglasgow-exts -cpp #-}
-module Parser(parse) where
+module Parser(parse,prettyProgram) where
 import  Lexer
 import AST
 import qualified Data.Array as Happy_Data_Array

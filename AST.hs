@@ -54,9 +54,7 @@ type String_Literal = (AlexPosn,String)
 
 prettyProgram :: Program -> String
 prettyProgram (Program d s)=
-    "Declarations:\n"++(show $ prettyDecs d ) ++ "Statements:\n" ++ (prettyStmts $ reverse s)
-printMap :: Map.Map k a -> String
-printMap _ =""
+    "Declarations:\n"++( prettyDecs d ) ++ "Statements:\n" ++ (prettyStmts $ reverse s)
 
 --prettyDecs :: Declarations -> String
 decError :: String -> (Type,AlexPosn) -> (Type,AlexPosn) -> a
@@ -65,8 +63,20 @@ decError key (t1,p1) (t2,p2) = error("Variable "++"key has declarations at"++ (s
 
 createDecMap d = Map.map fst $ Map.fromListWithKey decError $ map unwrapDec d
 
-prettyDecs d = Map.mapWithKey (\s t -> "\t" ++ s ++ " : " ++ (show t) ++ "\n" ) $ createDecMap d
+prettyDecs d = Map.foldrWithKey  (\s t p -> p ++ "\t" ++ s ++ " : " ++ (show t) ++ "\n" )  "" $ createDecMap d
 
 unwrapDec (Dec (pos,str) t) = (str,(t,pos))
 prettyStmts _ = ""
+
+
+
+stmtTree SAssign (i,p) e = i ++ "yo!"
+stmtTree _ = ""
+
+   -- | SElse Exp StatementList StatementList
+    --| SWhile Exp StatementList
+    --| SPrint Exp
+    --| SRead Id
+    --| SAssign Id Exp
+
 
