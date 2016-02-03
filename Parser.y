@@ -53,11 +53,11 @@ Declaration:
 
 DeclarationList :
     Declaration               { [ $1] }
-    |  Declaration DeclarationList   { $1 : $2 }
+    | DeclarationList Declaration    { $2 : $1 }
 
 StatementList :
     Statement               { [ $1] }
-    |  Statement StatementList   { $1 : $2 }
+    | StatementList Statement    { $2 : $1 }
 
 --types of statements
 Statement :
