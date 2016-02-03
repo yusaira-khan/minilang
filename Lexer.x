@@ -1,5 +1,5 @@
 {
-module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn,AlexPosn) where
+module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn,AlexPosn,getPosString) where
 }
 
 %wrapper "posn"
@@ -125,11 +125,12 @@ getLineNum (AlexPn offset lineNum colNum) = lineNum
 getColumnNum :: AlexPosn -> Int
 getColumnNum (AlexPn offset lineNum colNum) = colNum
 
+getPosString pos = "line " ++ show (getLineNum  pos) ++ " and column " ++ show ( getColumnNum  pos)
 -- Action to read a token
 scan str = go (alexStartPos,'\n',[],str)
     where go inp@(pos,_,_,str) = case alexScan inp 0 of
             AlexEOF -> [TEOF pos]
-            AlexError inp' -> error ( "Invalid\nLexical error @ line " ++ show (getLineNum  pos) ++ " and column " ++ show ( getColumnNum  pos))
+            AlexError inp' -> error ( "Invalid\nLexical error @ " ++ getPosString pos )
             AlexSkip inp' _ -> go inp'
             AlexToken inp' len act -> act pos (take len str) : go inp'
 
