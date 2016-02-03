@@ -1,6 +1,7 @@
 {
 module Parser(parse) where
 import  Lexer
+import AST
 }
 
 
@@ -92,59 +93,6 @@ parseError :: [Token] -> a
 parseError tokenList = let pos = tokenPosn(head(tokenList))
   in
   error ("Invalid \nParse error @ line " ++ show(getLineNum(pos)) ++ " and column " ++ show(getColumnNum(pos)))
-
-
-data Program
-    = Program DeclarationList StatementList
-      deriving (Show, Eq)
-
-data Declaration
-    = Dec Id Type
-      deriving (Show, Eq)
-
-data Type =
-    TypeInt
-    | TypeFloat
-    | TypeString
-    deriving (Show, Eq)
-
-data Statement
-    = SIf Exp StatementList
-    | SElse Exp StatementList StatementList
-    | SWhile Exp StatementList
-    | SPrint Exp
-    | SRead Id
-    | SAssign Id Exp
-
-    deriving (Show, Eq)
-
-data Exp
-    = EPlus Exp Term
-    | EMinus Exp Term
-    | ETerm Term
-    deriving (Show, Eq)
-
-data Term
-    = TTimes Term Factor
-    | TDiv Term Factor
-    | TFac Factor
-    deriving (Show, Eq)
-
-data Factor
-    = FPar Exp
-    | FNeg Factor
-    | FFLit Float_Literal
-    | FILit Integer_Literal
-    | FSLit String_Literal
-    | FId Id
-    deriving (Show, Eq)
-
-type StatementList = [Statement]
-type DeclarationList = [Declaration]
-type Id = String
-type Integer_Literal = Int
-type Float_Literal = Float
-type String_Literal = String
 
 
 }
