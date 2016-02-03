@@ -61,7 +61,8 @@ StatementList :
 
 --types of statements
 Statement :
-    if  Exp then  StatementList else StatementList endif { SIf $2 $4 $6 }
+    if  Exp then  StatementList endif { SIf $2 $4 }
+    | if  Exp then  StatementList else StatementList endif { SElse $2 $4 $6 }
     | while  Exp do StatementList done                { SWhile $2 $4 }
     | print  Exp  ";"         { SPrint $2 }
     | read   Id  ";"         { SRead $2 }
@@ -108,7 +109,8 @@ data Type =
     deriving (Show, Eq)
 
 data Statement
-    = SIf Exp StatementList StatementList
+    = SIf Exp StatementList
+    | SElse Exp StatementList StatementList
     | SWhile Exp StatementList
     | SPrint Exp
     | SRead Id
