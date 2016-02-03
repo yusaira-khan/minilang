@@ -2,7 +2,7 @@
 {-# LANGUAGE CPP,MagicHash #-}
 {-# LINE 1 "Lexer.x" #-}
 
-module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn) where
+module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn,AlexPosn) where
 
 #if __GLASGOW_HASKELL__ >= 603
 #include "ghcconfig.h"
@@ -242,7 +242,7 @@ alex_accept = listArray (0::Int,77) [AlexAccNone,AlexAccNone,AlexAccNone,AlexAcc
 -- The token type:
 data Token =
      TVar AlexPosn
-     | TId AlexPosn String
+     | TId (AlexPosn,String)
      | TLeftParen AlexPosn
 	 | TRightParen AlexPosn
      | TPlus AlexPosn
@@ -264,16 +264,16 @@ data Token =
      | TIntType AlexPosn
 	 | TFloatType AlexPosn
 	 | TStringType AlexPosn
-	 | TIntLit AlexPosn Int
-	 | TFloatLit AlexPosn Float
-	 | TStringLit AlexPosn String
+	 | TIntLit (AlexPosn,Int)
+	 | TFloatLit (AlexPosn,Float)
+	 | TStringLit (AlexPosn,String)
      | TEOF AlexPosn
      deriving (Eq,Show)
 
 
 --getting position information for error messages
 tokenPosn (TVar p) = p
-tokenPosn (TId p _) = p
+tokenPosn (TId (p,s)) = p
 tokenPosn (TLeftParen p) = p
 tokenPosn (TRightParen p) = p
 tokenPosn (TPlus p) = p
@@ -295,9 +295,9 @@ tokenPosn (TRead p) = p
 tokenPosn (TIntType p) = p
 tokenPosn (TFloatType p) = p
 tokenPosn (TStringType p) = p
-tokenPosn (TIntLit p i) = p
-tokenPosn (TStringLit p str) = p
-tokenPosn (TFloatLit p c) = p
+tokenPosn (TIntLit (p,i)) = p
+tokenPosn (TStringLit (p,str)) = p
+tokenPosn (TFloatLit (p,c)) = p
 tokenPosn (TEOF p) = p
 
 getLineNum :: AlexPosn -> Int
@@ -318,12 +318,12 @@ scan str = go (alexStartPos,'\n',[],str)
 alex_action_2 =  \p s -> TIntType p 
 alex_action_3 =  \p s -> TFloatType p 
 alex_action_4 =  \p s -> TStringType p 
-alex_action_5 =  \p s -> TIntLit p (read s) 
-alex_action_6 =  \p s -> TIntLit p (read s) 
-alex_action_7 =  \p s -> TFloatLit p (read s) 
-alex_action_8 =  \p s -> TFloatLit p (read $ s ++ "0") 
-alex_action_9 =  \p s -> TFloatLit p (read $ "0" ++ s) 
-alex_action_10 =  \p s-> TStringLit p (s) 
+alex_action_5 =  \p s -> TIntLit (p, (read s) )
+alex_action_6 =  \p s -> TIntLit (p,read s) 
+alex_action_7 =  \p s -> TFloatLit (p,(read s)) 
+alex_action_8 =  \p s -> TFloatLit (p, (read $ s ++ "0")) 
+alex_action_9 =  \p s -> TFloatLit (p,(read $ "0" ++ s)) 
+alex_action_10 =  \p s-> TStringLit  (p,s) 
 alex_action_11 =  \p s -> TVar p 
 alex_action_12 =  \p s -> TIf p 
 alex_action_13 =  \p s -> TThen p 
@@ -343,7 +343,7 @@ alex_action_26 =  \p s -> TLeftParen p
 alex_action_27 =  \p s -> TRightParen p 
 alex_action_28 =  \p s -> TPrint p 
 alex_action_29 =  \p s -> TRead p 
-alex_action_30 =  \p s -> TId p (s) 
+alex_action_30 =  \p s -> TId (p,s) 
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}

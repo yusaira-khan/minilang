@@ -161,7 +161,7 @@ happyReduction_5 (happy_x_5 `HappyStk`
 	happy_x_2 `HappyStk`
 	happy_x_1 `HappyStk`
 	happyRest)
-	 = case happyOutTok happy_x_2 of { (TId _ happy_var_2) -> 
+	 = case happyOutTok happy_x_2 of { (TId  happy_var_2) -> 
 	case happyOut5 happy_x_4 of { happy_var_4 -> 
 	happyIn6
 		 (Dec happy_var_2 happy_var_4
@@ -254,7 +254,7 @@ happyReduce_14 = happySpecReduce_3  5# happyReduction_14
 happyReduction_14 happy_x_3
 	happy_x_2
 	happy_x_1
-	 =  case happyOutTok happy_x_2 of { (TId _ happy_var_2) -> 
+	 =  case happyOutTok happy_x_2 of { (TId  happy_var_2) -> 
 	happyIn9
 		 (SRead happy_var_2
 	)}
@@ -265,7 +265,7 @@ happyReduction_15 (happy_x_4 `HappyStk`
 	happy_x_2 `HappyStk`
 	happy_x_1 `HappyStk`
 	happyRest)
-	 = case happyOutTok happy_x_1 of { (TId _ happy_var_1) -> 
+	 = case happyOutTok happy_x_1 of { (TId  happy_var_1) -> 
 	case happyOut10 happy_x_3 of { happy_var_3 -> 
 	happyIn9
 		 (SAssign happy_var_1 happy_var_3
@@ -344,28 +344,28 @@ happyReduction_23 happy_x_2
 
 happyReduce_24 = happySpecReduce_1  8# happyReduction_24
 happyReduction_24 happy_x_1
-	 =  case happyOutTok happy_x_1 of { (TFloatLit _ happy_var_1) -> 
+	 =  case happyOutTok happy_x_1 of { (TFloatLit  happy_var_1) -> 
 	happyIn12
 		 (FFLit happy_var_1
 	)}
 
 happyReduce_25 = happySpecReduce_1  8# happyReduction_25
 happyReduction_25 happy_x_1
-	 =  case happyOutTok happy_x_1 of { (TStringLit _ happy_var_1) -> 
+	 =  case happyOutTok happy_x_1 of { (TStringLit  happy_var_1) -> 
 	happyIn12
 		 (FSLit happy_var_1
 	)}
 
 happyReduce_26 = happySpecReduce_1  8# happyReduction_26
 happyReduction_26 happy_x_1
-	 =  case happyOutTok happy_x_1 of { (TIntLit _ happy_var_1) -> 
+	 =  case happyOutTok happy_x_1 of { (TIntLit  happy_var_1) -> 
 	happyIn12
 		 (FILit happy_var_1
 	)}
 
 happyReduce_27 = happySpecReduce_1  8# happyReduction_27
 happyReduction_27 happy_x_1
-	 =  case happyOutTok happy_x_1 of { (TId _ happy_var_1) -> 
+	 =  case happyOutTok happy_x_1 of { (TId  happy_var_1) -> 
 	happyIn12
 		 (FId happy_var_1
 	)}
@@ -379,9 +379,9 @@ happyNewToken action sts stk (tk:tks) =
 	TIntType _ -> cont 1#;
 	TFloatType _ -> cont 2#;
 	TStringType _ -> cont 3#;
-	TIntLit _ happy_dollar_dollar -> cont 4#;
-	TFloatLit _ happy_dollar_dollar -> cont 5#;
-	TStringLit _ happy_dollar_dollar -> cont 6#;
+	TIntLit  happy_dollar_dollar -> cont 4#;
+	TFloatLit  happy_dollar_dollar -> cont 5#;
+	TStringLit  happy_dollar_dollar -> cont 6#;
 	TVar _ -> cont 7#;
 	TIf _ -> cont 8#;
 	TThen _ -> cont 9#;
@@ -401,7 +401,7 @@ happyNewToken action sts stk (tk:tks) =
 	TRightParen _ -> cont 23#;
 	TPrint _ -> cont 24#;
 	TRead _ -> cont 25#;
-	TId _ happy_dollar_dollar -> cont 26#;
+	TId  happy_dollar_dollar -> cont 26#;
 	TEOF _ -> cont 27#;
 	_ -> happyError' (tk:tks)
 	}

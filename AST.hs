@@ -47,20 +47,26 @@ data Factor
 
 type StatementList = [Statement]
 type DeclarationList = [Declaration]
-type Id = String
-type Integer_Literal = Int
-type Float_Literal = Float
-type String_Literal = String
+type Id = (AlexPosn,String)
+type Integer_Literal = (AlexPosn,Int)
+type Float_Literal = (AlexPosn,Float)
+type String_Literal = (AlexPosn,String)
 
 prettyProgram :: Program -> String
 prettyProgram (Program d s)=
     "Declarations:\n"++(show $ prettyDecs d ) ++ "Statements:\n" ++ (prettyStmts $ reverse s)
 printMap :: Map.Map k a -> String
 printMap _ =""
---prettyDecs :: Declarations -> String
-decError key val1 val2 = error("declaration has 2 values:"++(show val1)++"and " ++(show val2))
-prettyDecs d = map unwrapDec d
 
-unwrapDec (Dec str t) = (str,t)
+--prettyDecs :: Declarations -> String
+decError :: String -> (Type,AlexPosn) -> (Type,AlexPosn) -> a
+decError key (t1,p1) (t2,p2) = error("Variable "++"key has declarations at"++ (show $ getLineNum p1)++"and " ++(show $ getLineNum p2))
+
+
+createDecMap d = Map.map fst $ Map.fromListWithKey decError $ map unwrapDec d
+
+prettyDecs d = Map.mapWithKey (\s t -> "\t" ++ s ++ " : " ++ (show t) ++ "\n" ) $ createDecMap d
+
+unwrapDec (Dec (pos,str) t) = (str,(t,pos))
 prettyStmts _ = ""
 

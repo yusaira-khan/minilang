@@ -1,5 +1,5 @@
 {
-module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn) where
+module Lexer (Token(..),scan, getLineNum,getColumnNum,tokenPosn,AlexPosn) where
 }
 
 %wrapper "posn"
@@ -22,14 +22,14 @@ tokens :-
        string      { \p s -> TStringType p }
 
 --precautions so that multiple zeroes don't count as a number
-       $nonzero $digit*        { \p s -> TIntLit p (read s) }
-       "0"        { \p s -> TIntLit p (read s) }
-       $nonzero $digit*\.$digit+     { \p s -> TFloatLit p (read s) }
-       $nonzero $digit*\.            { \p s -> TFloatLit p (read $ s ++ "0") }
-       "0"?\.$digit+            { \p s -> TFloatLit p (read $ "0" ++ s) }
+       $nonzero $digit*        { \p s -> TIntLit (p, (read s) )}
+       "0"        { \p s -> TIntLit (p,read s) }
+       $nonzero $digit*\.$digit+     { \p s -> TFloatLit (p,(read s)) }
+       $nonzero $digit*\.            { \p s -> TFloatLit (p, (read $ s ++ "0")) }
+       "0"?\.$digit+            { \p s -> TFloatLit (p,(read $ "0" ++ s)) }
 
 --acceptible characters in string listed above
-       @string      { \p s-> TStringLit p (s) }
+       @string      { \p s-> TStringLit  (p,s) }
 
 --keywords
        var          { \p s -> TVar p }
@@ -54,14 +54,14 @@ tokens :-
        print        { \p s -> TPrint p }
        read         { \p s -> TRead p }
 --var
-       $alpha[$alpha $digit \_ ]* { \p s -> TId p (s) }
+       $alpha[$alpha $digit \_ ]* { \p s -> TId (p,s) }
 {
 -- Each action has type :: String -> Token
 
 -- The token type:
 data Token =
      TVar AlexPosn
-     | TId AlexPosn String
+     | TId (AlexPosn,String)
      | TLeftParen AlexPosn
 	 | TRightParen AlexPosn
      | TPlus AlexPosn
@@ -83,16 +83,16 @@ data Token =
      | TIntType AlexPosn
 	 | TFloatType AlexPosn
 	 | TStringType AlexPosn
-	 | TIntLit AlexPosn Int
-	 | TFloatLit AlexPosn Float
-	 | TStringLit AlexPosn String
+	 | TIntLit (AlexPosn,Int)
+	 | TFloatLit (AlexPosn,Float)
+	 | TStringLit (AlexPosn,String)
      | TEOF AlexPosn
      deriving (Eq,Show)
 
 
 --getting position information for error messages
 tokenPosn (TVar p) = p
-tokenPosn (TId p _) = p
+tokenPosn (TId (p,s)) = p
 tokenPosn (TLeftParen p) = p
 tokenPosn (TRightParen p) = p
 tokenPosn (TPlus p) = p
@@ -114,9 +114,9 @@ tokenPosn (TRead p) = p
 tokenPosn (TIntType p) = p
 tokenPosn (TFloatType p) = p
 tokenPosn (TStringType p) = p
-tokenPosn (TIntLit p i) = p
-tokenPosn (TStringLit p str) = p
-tokenPosn (TFloatLit p c) = p
+tokenPosn (TIntLit (p,i)) = p
+tokenPosn (TStringLit (p,str)) = p
+tokenPosn (TFloatLit (p,c)) = p
 tokenPosn (TEOF p) = p
 
 getLineNum :: AlexPosn -> Int

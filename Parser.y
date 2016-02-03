@@ -12,9 +12,9 @@ import AST
        int          {  TIntType _ }
        float        {  TFloatType _ }
        string       {  TStringType _ }
-       Integer_Literal      {  TIntLit _ $$ }
-       Float_Literal    {  TFloatLit _ $$ }
-       String_Literal   {  TStringLit _ $$ }
+       Integer_Literal      {  TIntLit  $$ }
+       Float_Literal    {  TFloatLit  $$ }
+       String_Literal   {  TStringLit  $$ }
        var          {  TVar _ }
        if           {  TIf _ }
        then         {  TThen _ }
@@ -34,7 +34,7 @@ import AST
        ")"			{  TRightParen _ }
        print        {  TPrint _ }
        read         {  TRead _ }
-       Id           {  TId _ $$ }
+       Id           {  TId  $$ }
        eof          {  TEOF _ }
 %left '+' '-'
 %left '*' '/'
