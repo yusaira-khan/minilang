@@ -3,6 +3,3 @@ var x : string;
 #Statements:
 read x ;
 print x ;
-print  (x + x)  ;
-print -x ;
-print  (x + - (x) )  ;

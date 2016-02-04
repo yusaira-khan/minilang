@@ -26,8 +26,5 @@ int main(){
   char* x;
   scanf( "%s",x);
   printf( "%s\n",x );
-  printf( "%s\n", add_s(x , x)  );
-  printf( "%s\n", neg_s(x)  );
-  printf( "%s\n", add_s(x ,  neg_s( (x) ) )  );
   return 0;
 }
