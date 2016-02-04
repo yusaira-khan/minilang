@@ -59,7 +59,7 @@ prettyProgram dec s=
 
 --prettyDecs :: Declarations -> String
 decError :: String -> (Type,AlexPosn) -> (Type,AlexPosn) -> a
-decError key (t1,p1) (t2,p2) = error("Variable "++"key has declarations at"++ (getPosString p1)++"and " ++(getPosString p2))
+decError key (t1,p1) (t2,p2) = error("Variable "++key++" has double declarations: at "++ (getPosString p1)++" and also at " ++(getPosString p2))
 
 
 createDecMap d = Map.map fst $ Map.fromListWithKey decError $ map unwrapDec d

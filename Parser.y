@@ -53,11 +53,13 @@ Declaration:
      var Id ":" Type ";"    { Dec $2 $4 }
 
 DeclarationList :
-    Declaration               { [ $1] }
+   -- Declaration               { [ $1] }
+   {- empty -}{ [] }
     | DeclarationList Declaration    { $2 : $1 }
 
 StatementList :
-    Statement               { [ $1] }
+   -- Statement               { [ $1] }
+      {- empty -}{ [] }
     | StatementList Statement    { $2 : $1 }
 
 --types of statements

@@ -9,9 +9,7 @@ Link to executable is ./minilang
 State machin for Parser available in Parser.info
 
 Interface: "./minilang  filepath"
-Scans and parses together.
-Prints "Valid" if  parses well
-Prints "Invalid" if scanning or parsing error occurs together with error location
+Programs must have atleast 1 declaration and 1 statement
 
 Help for Alex and Happy and error reporting taken from:
 https://github.com/bjwbell/NewL-Compiler

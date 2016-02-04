@@ -1,7 +1,0 @@
- var x : string;
-read x;
-print x;
-print x+x;
-print -x;
-print x-x;
-
