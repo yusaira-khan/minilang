@@ -26,7 +26,9 @@ compile fname inp = case P.parse $ L.scan inp of
     P.Program dec stmts -> let
         symtable = P.createDecMap dec
       in do
-      putStrLn(show $ T.checkStmts stmts symtable)
+      if (T.checkStmts stmts symtable) /= "" then
+        putStrLn ""
+      else error("didn't type check")
       writePretty fname symtable stmts
       writeC fname symtable stmts
 

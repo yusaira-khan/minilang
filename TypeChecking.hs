@@ -5,7 +5,7 @@ import qualified Data.Map as Map
 import qualified Lexer as L
 
 
-checkStmts l  d= foldr eachValid (TypeInt) $ map (checkStmnt d) l
+checkStmts l  d= foldr eachValid "" $ map (checkStmnt d) l
 
 eachValid current previous = current
 
@@ -24,18 +24,18 @@ checkFac (FILit (p,i)) d = TypeFloat
 checkFac (FSLit (p,i)) d = TypeString
 checkFac (FId (p,i)) d = getVarType d i p
 
-checkStmnt d (SAssign (p,i) e)  = checkAssign (getVarType d i p)  (checkExp e d)
+checkStmnt d (SAssign (p,i) e)  = show $ checkAssign (getVarType d i p)  (checkExp e d)
 checkStmnt d (SElse e s1 s2)  =   if (checkInt  $ checkExp e d) == TypeInt
     then
         let c1 =checkStmts s1 d
             c2 =checkStmts s2 d
         in case (c1,c2) of
-            _ -> c1
+            _ -> show $ c1
     else error("Can only have ints in if statment")
-checkStmnt d (SIf e s1)  = if (checkInt $ checkExp e d) == TypeInt then  checkStmts s1 d else error("Can only have ints in if statment")
-checkStmnt d (SWhile e s1)  = if (checkInt  $ checkExp e d) == TypeInt then  checkStmts s1 d else error("Can only have ints in if statment")
-checkStmnt d (SPrint e )  = let z = checkExp e d in trace (show z ) z
-checkStmnt d (SRead (p,i) )  =  getVarType d i p
+checkStmnt d (SIf e s1)  = if (checkInt $ checkExp e d) == TypeInt then show $ checkStmts s1 d else error("Can only have ints in if statment")
+checkStmnt d (SWhile e s1)  = if (checkInt  $ checkExp e d) == TypeInt then show $ checkStmts s1 d else error("Can only have ints in if statment")
+checkStmnt d (SPrint e )  = let z = checkExp e d in show z
+checkStmnt d (SRead (p,i) )  =  show $ getVarType d i p
 
 
 termError x = error("Action invalid for " ++ (show x))
