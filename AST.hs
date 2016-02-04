@@ -65,7 +65,7 @@ decError key (t1,p1) (t2,p2) = error("Variable "++"key has declarations at"++ (g
 createDecMap d = Map.map fst $ Map.fromListWithKey decError $ map unwrapDec d
 
 prettyDecs d = Map.foldrWithKey  (\s t p -> p ++ "var " ++ s ++ " : " ++ (T.unpack $ T.toLower $ T.drop 4 $ T.pack $ show t) ++ ";\n" )  "" d
-symbolTable d = Map.foldrWithKey  (\s t p -> p ++ s ++ " \t " ++ (T.unpack $ T.toLower $ T.drop 4 $ T.pack $ show t) ++ ";\n" )  "" d
+symbolTable d = Map.foldrWithKey  (\s t p -> p ++ s ++ " \t " ++ (T.unpack $ T.toLower $ T.drop 4 $ T.pack $ show t) ++ "\n" )  "" d
 
 unwrapDec (Dec (pos,str) t) = (str,(t,pos))
 

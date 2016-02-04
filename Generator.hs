@@ -30,32 +30,34 @@ generateStmt dec indent (SElse e s1 s2) = let
     i1 = "if ("++(generateExp TypeInt e)++") {\n"
     i2 = (generateBlock dec (indent++"  ") s1)++indent ++"} else {\n"
     i3 = (generateBlock dec (indent++"  ") s2)++indent ++ "}"
-  in i1++i2++i3
+  in i1 ++ i2 ++ i3
 generateStmt dec indent (SIf e s1) = let
     i1 = "if ("++(generateExp TypeInt e)++") {\n"
     i2 = (generateBlock dec (indent++"  ") s1)++indent ++"}"
   in i1++i2
 generateStmt dec indent (SWhile e s1) = let
-    i1="while ("++(generateExp TypeInt e)++") {\n"
-    i2 =(generateBlock dec (indent++"  ") s1)++indent ++"}"
+    i1 = "while ("++(generateExp TypeInt e)++") {\n"
+    i2 = (generateBlock dec (indent++"  ") s1)++indent ++"}"
   in i1++i2
 generateStmt dec indent (SPrint e) = let
-    t= T.checkExp e dec
-    s= generateExp t e
-    p=getPrintFunction t
+    t = T.checkExp e dec
+    s = generateExp t e
+    p = getPrintFunction t
   in p++s++" );"
 generateStmt dec indent (SRead (p,i) ) = let
     t = (T.getVarType dec i p)
-    f=getReadFunction t
-  in f++i++");"
+    f = getReadFunction indent t
+  in case t of
+    TypeString -> i ++ f ++ i ++");"
+    _ -> f ++ i ++ ");"
 
 getPrintFunction TypeInt = "printf( \"%d\\n\","
 getPrintFunction TypeString = "printf( \"%s\\n\","
 getPrintFunction TypeFloat = "printf( \"%f\\n\","
 
-getReadFunction TypeInt = "scanf( \"%d\",&"
-getReadFunction TypeString = "scanf( \"%s\","
-getReadFunction TypeFloat = "scanf( \"%f\",&"
+getReadFunction i TypeInt = "scanf( \"%d\",&"
+getReadFunction i TypeString = "=malloc(1024);\n" ++ i ++ "scanf( \"%s\","
+getReadFunction i TypeFloat = "scanf( \"%f\",&"
 
 genearateDecs d = Map.foldrWithKey  (\s t p -> p++"  "++ (getCType t) ++ s ++ ";\n" )  "" d
 

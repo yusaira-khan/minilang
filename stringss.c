@@ -24,7 +24,11 @@ char* neg_s(char *s1){
 
 int main(){
   char* x;
+  x=malloc(1024);
   scanf( "%s",x);
   printf( "%s\n",x );
+  printf( "%s\n", add_s(x , x)  );
+  printf( "%s\n", neg_s(x)  );
+  printf( "%s\n", add_s(x ,  neg_s( (x) ) )  );
   return 0;
 }
