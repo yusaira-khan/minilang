@@ -1,6 +1,7 @@
 module Generator where
 import AST
 import qualified TypeChecking as T
+import qualified Data.Map as Map
 
 generateBlock dec indent l = foldr (\s p -> p ++ "int" ++ s++ "\n") "" $ map (generateStmt dec indent ) l
 
@@ -55,3 +56,9 @@ getPrintFunction TypeFloat = "printf( \"%f\\n\","
 getReadFunction TypeInt = "read_i( "
 getReadFunction TypeString = "read_f( "
 getReadFunction TypeFloat = "read_s( "
+
+genearateDecs d = Map.foldrWithKey  (\s t p -> p++"  "++ (getCType t) ++" "++ s ++ ";\n" )  "" d
+
+getCType TypeInt = "int "
+getCType TypeFloat = "float "
+getCType TypeString = "char* "
