@@ -1,5 +1,7 @@
 module AST where
 import qualified Data.Map as Map
+import qualified Data.Text as T
+
 import  Lexer
 data Program
     = Program DeclarationList StatementList
@@ -54,7 +56,7 @@ type String_Literal = (AlexPosn,String)
 
 prettyProgram :: Program -> String
 prettyProgram (Program d s)=
-    "Declarations:\n"++( prettyDecs d ) ++ "Statements:\n" ++ ( prettyStmts s)
+    "#Declarations:\n"++( prettyDecs d ) ++ "#Statements:\n" ++ ( prettyStmts s)
 
 --prettyDecs :: Declarations -> String
 decError :: String -> (Type,AlexPosn) -> (Type,AlexPosn) -> a
@@ -63,7 +65,7 @@ decError key (t1,p1) (t2,p2) = error("Variable "++"key has declarations at"++ (g
 
 createDecMap d = Map.map fst $ Map.fromListWithKey decError $ map unwrapDec d
 
-prettyDecs d = Map.foldrWithKey  (\s t p -> p ++ "\t" ++ s ++ " : " ++ (show t) ++ "\n" )  "" $ createDecMap d
+prettyDecs d = Map.foldrWithKey  (\s t p -> p ++ "\tvar " ++ s ++ " : " ++ (T.unpack $ T.toLower $ T.drop 4 $ T.pack $ show t) ++ ";\n" )  "" $ createDecMap d
 
 unwrapDec (Dec (pos,str) t) = (str,(t,pos))
 
@@ -74,24 +76,27 @@ printTerm (TDiv e f) = " ("++(printTerm e ) ++" / " ++(printFac f) ++") " --FIXM
 printTerm (TFac t) = printFac t
 
 printExp (EPlus e t) = " ("++(printExp e ) ++" + " ++(printTerm t) ++") "
-printExp (EMinus e t) = printExp $ EPlus e $  TFac $ FNeg $ FPar $ ETerm t
+printExp (EMinus e t) = printExp $ EPlus e $ TFac $ FNeg $ FPar $ ETerm t
 printExp (ETerm t) = printTerm t
 
 printFac (FPar e) = case e of
-    ETerm _ ->t
-    _-> " ("++(t)++") "
-  where t = printExp e
+    ETerm x -> case x of
+        TFac (FPar p) -> printExp p
+        TFac _ -> " ("++ printExp e ++") "
+        _->   printExp e
+    _->  printExp e
+
 printFac (FNeg e) = "-" ++(printFac e)
 printFac (FFLit (p,f)) = show f -- ++ "\t @ " ++ getPosString p
 printFac (FILit (p,i)) = show i -- ++ "\t @ " ++ getPosString p
 printFac (FSLit (p,i)) = i -- ++ "\t @ " ++ getPosString p
 printFac (FId (p,i)) = i -- ++ "\t @ " ++ getPosString p
 
-stmtTree (SAssign (p,i) e) = i ++ "\t" ++ (printExp e)
-stmtTree (SElse e s1 s2) = "if\n"++(printExp e)++ (prettyStmts s1)++"else\n"++(prettyStmts s2)
-stmtTree (SIf e s1) = "if\n"++(printExp e)++ (prettyStmts s1)
-stmtTree (SWhile e s1) = "while\t"++(printExp e)++ "\n"++(prettyStmts s1)
-stmtTree (SPrint e ) = "print\t"++(printExp e)
-stmtTree (SRead (p,i) ) = "read\t"++i  ++ "\t @ " ++ getPosString p
+stmtTree (SAssign (p,i) e) = i ++ "=" ++ (printExp e)++";\n"
+stmtTree (SElse e s1 s2) = "if "++(printExp e)++" then\n"++ (prettyStmts s1)++"else\n"++(prettyStmts s2)++"endif\n"
+stmtTree (SIf e s1) = "if "++(printExp e)++" then\n"++ (prettyStmts s1)++"endif\n"
+stmtTree (SWhile e s1) = "while\t"++(printExp e)++"do\n"++ "\n"++(prettyStmts s1)++"done\n"
+stmtTree (SPrint e ) = "print\t"++(printExp e)++" ;\n"
+stmtTree (SRead (p,i) ) = "read\t"++i++" ;\n"
 
 
