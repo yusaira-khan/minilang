@@ -1,5 +1,5 @@
 {
-module Parser(parse,prettyProgram,createDecMap,Program(..)) where
+module Parser(parse,prettyProgram,createDecMap,Program(..),symbolTable) where
 import  Lexer
 import AST
 }

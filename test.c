@@ -23,5 +23,18 @@ char* neg_s(char *s1){
 }
 
 int main(){
-return 0;
+  int x;
+  x = 5;
+  printf( "%d\n",x );
+  x = 5 + 5 * 5;
+  printf( "%d\n",x );
+  x =  (5 +  (5 * 5) ) ;
+  printf( "%d\n",x );
+  x =  (6 + -5)  * 5 + 3;
+  printf( "%d\n",x );
+  x =  (5 +  (5 * 5) ) ;
+  printf( "%d\n",x );
+  x =  ( ( (6 + -5)  * 5)  + 3) ;
+  printf( "%d\n",x );
+  return 0;
 }
