@@ -54,9 +54,8 @@ type Integer_Literal = (AlexPosn,Int)
 type Float_Literal = (AlexPosn,Float)
 type String_Literal = (AlexPosn,String)
 
-prettyProgram :: Program -> String
-prettyProgram (Program d s)=
-    "#Declarations:\n"++( prettyDecs d ) ++ "#Statements:\n" ++ ( prettyStmts s)
+prettyProgram dec s=
+    "#Declarations:\n"++( prettyDecs dec ) ++ "#Statements:\n" ++ ( prettyStmts s)
 
 --prettyDecs :: Declarations -> String
 decError :: String -> (Type,AlexPosn) -> (Type,AlexPosn) -> a
@@ -65,7 +64,7 @@ decError key (t1,p1) (t2,p2) = error("Variable "++"key has declarations at"++ (g
 
 createDecMap d = Map.map fst $ Map.fromListWithKey decError $ map unwrapDec d
 
-prettyDecs d = Map.foldrWithKey  (\s t p -> p ++ "\tvar " ++ s ++ " : " ++ (T.unpack $ T.toLower $ T.drop 4 $ T.pack $ show t) ++ ";\n" )  "" $ createDecMap d
+prettyDecs d = Map.foldrWithKey  (\s t p -> p ++ "\tvar " ++ s ++ " : " ++ (T.unpack $ T.toLower $ T.drop 4 $ T.pack $ show t) ++ ";\n" )  "" d
 
 unwrapDec (Dec (pos,str) t) = (str,(t,pos))
 
@@ -86,13 +85,14 @@ printFac (FPar e) = case e of
         _->   printExp e
     _->  printExp e
 
+
 printFac (FNeg e) = "-" ++(printFac e)
 printFac (FFLit (p,f)) = show f -- ++ "\t @ " ++ getPosString p
 printFac (FILit (p,i)) = show i -- ++ "\t @ " ++ getPosString p
 printFac (FSLit (p,i)) = i -- ++ "\t @ " ++ getPosString p
 printFac (FId (p,i)) = i -- ++ "\t @ " ++ getPosString p
 
-stmtTree (SAssign (p,i) e) = i ++ "=" ++ (printExp e)++";\n"
+stmtTree (SAssign (p,i) e) = i ++ " = " ++ (printExp e)++";\n"
 stmtTree (SElse e s1 s2) = "if "++(printExp e)++" then\n"++ (prettyStmts s1)++"else\n"++(prettyStmts s2)++"endif\n"
 stmtTree (SIf e s1) = "if "++(printExp e)++" then\n"++ (prettyStmts s1)++"endif\n"
 stmtTree (SWhile e s1) = "while\t"++(printExp e)++"do\n"++ "\n"++(prettyStmts s1)++"done\n"

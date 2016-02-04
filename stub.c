@@ -22,9 +22,6 @@ char* neg_s(char *s1){
     return result;
 }
 
-
-
 int main(){
-int x =5+ -(5);
-   return 0;
+return 0;
 }
